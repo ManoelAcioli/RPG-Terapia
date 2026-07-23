@@ -1,11 +1,17 @@
 # RPG-Terapia
 
-Dois projetos vivem neste repositório:
+Três projetos vivem neste repositório (os dois primeiros são protótipos do
+RPG terapêutico "Ecos do Eterno" em formatos diferentes):
 
-- **`game/`** — *Ecos do Eterno*: protótipo jogável (Phaser 3 + TypeScript +
-  Vite) inspirado em GRIS, baseado no RPG terapêutico "Ecos do Eterno".
-  Ver `game/README.md` (como rodar) e `game/DESIGN.md` (visão de design).
-  Comandos: `cd game && npm install && npm run dev` (dev) / `npm run build`.
+- **`vn/`** — *O Eco*: protótipo **visual novel** no formato de Slay the
+  Princess (TypeScript + Vite, engine própria, arte procedural em traço de
+  lápis). Ver `vn/README.md` e `vn/DESIGN.md`.
+  Comandos: `cd vn && npm install && npm run dev` / `npm run build` /
+  `npm run lint:graph` (valida o grafo narrativo).
+- **`game/`** — *A Cidade Suspensa no Tempo*: protótipo **plataforma**
+  inspirado em GRIS (Phaser 3 + TypeScript + Vite).
+  Ver `game/README.md` e `game/DESIGN.md`.
+  Comandos: `cd game && npm install && npm run dev` / `npm run build`.
 - **`my-video/`** — Selfi: app de vídeo construído com
   [Remotion](https://www.remotion.dev/) (projeto anterior).
 

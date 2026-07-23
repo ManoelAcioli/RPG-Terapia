@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ecos do Eterno — O Eco</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div id="stage">
+      <canvas id="art"></canvas>
+      <div id="vignette"></div>
+      <div id="hud">
+        <span id="cycle-label"></span>
+        <span id="voice-glyphs"></span>
+      </div>
+      <div id="textbox">
+        <div id="speaker"></div>
+        <div id="text"></div>
+        <div id="choices"></div>
+        <div id="advance-hint">▾</div>
+      </div>
+      <div id="title-screen">
+        <div class="t-spiral"></div>
+        <h1>E C O S&ensp;D O&ensp;E T E R N O</h1>
+        <h2>o eco</h2>
+        <p class="t-hint">clique para começar</p>
+        <p class="t-cycles" id="t-cycles"></p>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
