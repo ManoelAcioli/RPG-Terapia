@@ -1,8 +1,13 @@
 # RPG-Terapia
 
-Três projetos vivem neste repositório (os dois primeiros são protótipos do
+Quatro projetos vivem neste repositório (os três primeiros são protótipos do
 RPG terapêutico "Ecos do Eterno" em formatos diferentes):
 
+- **`hybrid/`** — *O Eco: Travessia*: protótipo **híbrido** (VN + mobilidade)
+  — o roteiro de ciclos da visual novel num mundo lateral onde as escolhas
+  são posturas físicas ("escolha por movimento"). TypeScript + Vite.
+  Ver `hybrid/README.md` e `hybrid/DESIGN.md`.
+  Comandos: `cd hybrid && npm install && npm run dev` / `npm run build`.
 - **`vn/`** — *O Eco*: protótipo **visual novel** no formato de Slay the
   Princess (TypeScript + Vite, engine própria, arte procedural em traço de
   lápis). Ver `vn/README.md` e `vn/DESIGN.md`.

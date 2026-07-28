@@ -1,0 +1,16 @@
+{
+  "name": "ecos-do-eterno-travessia",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Protótipo híbrido — O Eco: Travessia. Visual novel de ciclos onde as escolhas são feitas com o corpo: andar, recuar, aproximar-se.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "vite": "^5.4.0"
+  }
+}

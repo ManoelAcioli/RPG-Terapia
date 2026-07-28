@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ecos do Eterno — O Eco: Travessia</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div id="stage">
+      <canvas id="art"></canvas>
+      <div id="vignette"></div>
+      <div id="dim"></div>
+      <div id="labels"></div>
+      <div id="subtitle">
+        <div id="sub-speaker"></div>
+        <div id="sub-text"></div>
+      </div>
+      <div id="hud">
+        <span id="cycle-label"></span>
+        <span id="voice-glyphs"></span>
+      </div>
+      <div id="endscreen">
+        <p id="end-label"></p>
+        <p id="end-question"></p>
+        <button id="end-restart">recomeçar o ciclo</button>
+      </div>
+      <div id="title-screen">
+        <div class="t-spiral"></div>
+        <h1>E C O S&ensp;D O&ensp;E T E R N O</h1>
+        <h2>o eco: travessia</h2>
+        <p class="t-controls">← → andar&emsp;·&emsp;espaço pular&emsp;·&emsp;o corpo escolhe</p>
+        <p class="t-hint">clique para começar</p>
+        <p class="t-cycles" id="t-cycles"></p>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
