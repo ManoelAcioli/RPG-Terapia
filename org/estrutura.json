@@ -1,0 +1,210 @@
+{
+  "titulo": "RPG-Terapia · Selfi",
+  "subtitulo": "a estrutura de agentes que roda a operação",
+  "nucleo": {
+    "id": "nucleo",
+    "nome": "NÚCLEO",
+    "papel": "Recebe a intenção crua, decide qual domínio responde e costura as entregas de volta em uma coisa só.",
+    "cor": "#E8E4FF"
+  },
+  "dominios": [
+    {
+      "id": "narrativa",
+      "nome": "NARRATIVA",
+      "subtitulo": "roteiro · personagens · arcos",
+      "cor": "#8B9BFF",
+      "papel": "Transforma tema emocional em história jogável e em roteiro de vídeo curto.",
+      "agentes": [
+        {
+          "id": "roteirista-curto",
+          "nome": "Roteirista de curta",
+          "entrega": "Roteiro de 30–60s com gancho, virada e fechamento.",
+          "tarefas": ["gancho de 3s", "estrutura de virada", "fechamento com convite"]
+        },
+        {
+          "id": "mestre-rpg",
+          "nome": "Mestre de campanha",
+          "entrega": "Cenários, NPCs e ganchos de aventura com carga terapêutica.",
+          "tarefas": ["cenário", "NPC espelho", "gancho de sessão", "tabela de eventos"]
+        },
+        {
+          "id": "arco-personagem",
+          "nome": "Arco de personagem",
+          "entrega": "Jornadas de personagem ancoradas em um processo emocional real.",
+          "tarefas": ["ferida inicial", "ponto de virada", "integração"]
+        },
+        {
+          "id": "revisor-tom",
+          "nome": "Revisor de tom",
+          "entrega": "Passa o texto na voz do projeto: direto, quente, sem pieguice.",
+          "tarefas": ["corta jargão", "corta muleta", "checa ritmo"]
+        }
+      ]
+    },
+    {
+      "id": "clinico",
+      "nome": "CLÍNICO",
+      "subtitulo": "fundamento · ética · segurança",
+      "cor": "#7FD8C4",
+      "papel": "Garante que o conteúdo tenha lastro e não cause dano. Tem poder de veto.",
+      "agentes": [
+        {
+          "id": "fundamento-terapeutico",
+          "nome": "Fundamento terapêutico",
+          "entrega": "Ancora cada peça em uma abordagem nomeada e citável.",
+          "tarefas": ["abordagem", "fonte", "limite do que a evidência sustenta"]
+        },
+        {
+          "id": "guarda-etica",
+          "nome": "Guarda ética",
+          "entrega": "Revisa risco antes de publicar: promessa de cura, diagnóstico, gatilho.",
+          "tarefas": ["checa promessa", "checa diagnóstico", "aviso de gatilho", "veto"]
+        },
+        {
+          "id": "linguagem-acessivel",
+          "nome": "Tradutor clínico",
+          "entrega": "Vira jargão técnico em linguagem de mesa de bar sem perder precisão.",
+          "tarefas": ["desjargoniza", "analogia", "mantém precisão"]
+        },
+        {
+          "id": "dinamica-sessao",
+          "nome": "Dinâmicas de sessão",
+          "entrega": "Exercícios aplicáveis de verdade, com material, tempo e debrief.",
+          "tarefas": ["passo a passo", "material", "debrief"]
+        }
+      ]
+    },
+    {
+      "id": "producao",
+      "nome": "PRODUÇÃO",
+      "subtitulo": "remotion · motion · áudio",
+      "cor": "#F0A6CA",
+      "papel": "Põe o roteiro na tela. É onde o código do Selfi vira vídeo.",
+      "agentes": [
+        {
+          "id": "remotion-dev",
+          "nome": "Dev Remotion",
+          "entrega": "Composições, componentes e animação em código.",
+          "tarefas": ["composição", "interpolate/spring", "componente reutilizável"]
+        },
+        {
+          "id": "design-visual",
+          "nome": "Direção visual",
+          "entrega": "Paleta, tipografia e layout consistentes entre as peças.",
+          "tarefas": ["paleta", "tipografia", "grid seguro de tela"]
+        },
+        {
+          "id": "audio-narracao",
+          "nome": "Áudio e legenda",
+          "entrega": "Timing de narração, trilha e legenda sincronizada.",
+          "tarefas": ["timing", "trilha", "legenda queimada"]
+        },
+        {
+          "id": "render-pipeline",
+          "nome": "Pipeline de render",
+          "entrega": "Presets de export por plataforma e render sem surpresa.",
+          "tarefas": ["preset 9:16", "preset 16:9", "checagem de peso"]
+        }
+      ]
+    },
+    {
+      "id": "distribuicao",
+      "nome": "DISTRIBUIÇÃO",
+      "subtitulo": "canais · calendário · alcance",
+      "cor": "#F5C77E",
+      "papel": "Leva a peça pronta até quem precisa ver, no formato de cada canal.",
+      "agentes": [
+        {
+          "id": "estrategia-canal",
+          "nome": "Estratégia de canal",
+          "entrega": "Mesma ideia recortada para TikTok, Reels e Shorts.",
+          "tarefas": ["recorte por canal", "duração alvo", "primeiro frame"]
+        },
+        {
+          "id": "copy-legenda",
+          "nome": "Copy e legenda",
+          "entrega": "Título, descrição, hashtag e chamada final.",
+          "tarefas": ["título", "descrição", "hashtags", "CTA"]
+        },
+        {
+          "id": "calendario-editorial",
+          "nome": "Calendário editorial",
+          "entrega": "Fila de publicação com tema, canal e data.",
+          "tarefas": ["fila", "cadência", "reaproveitamento"]
+        },
+        {
+          "id": "analise-metricas",
+          "nome": "Leitura de métricas",
+          "entrega": "Lê o desempenho e devolve o próximo tema, não um relatório.",
+          "tarefas": ["retenção", "o que repetir", "o que aposentar"]
+        }
+      ]
+    },
+    {
+      "id": "produto",
+      "nome": "PRODUTO",
+      "subtitulo": "selfi · backlog · código",
+      "cor": "#9BE7FF",
+      "papel": "Cuida do app em si: o que construir, como construir, e o que já quebrou.",
+      "agentes": [
+        {
+          "id": "arquiteto-selfi",
+          "nome": "Arquiteto do Selfi",
+          "entrega": "Decisões técnicas e seus custos, registradas.",
+          "tarefas": ["decisão", "trade-off", "ADR"]
+        },
+        {
+          "id": "backlog-produto",
+          "nome": "Backlog",
+          "entrega": "Ideia crua vira issue com escopo, critério de pronto e prioridade.",
+          "tarefas": ["escopo", "critério de pronto", "prioridade"]
+        },
+        {
+          "id": "qa-revisor",
+          "nome": "Revisor de código",
+          "entrega": "Revisa o diff atrás de bug real, não de estilo.",
+          "tarefas": ["caso de falha", "regressão", "teste faltando"]
+        },
+        {
+          "id": "docs-projeto",
+          "nome": "Documentação",
+          "entrega": "Mantém CLAUDE.md, README e a estrutura em dia com o que existe.",
+          "tarefas": ["CLAUDE.md", "README", "sincroniza estrutura"]
+        }
+      ]
+    },
+    {
+      "id": "inteligencia",
+      "nome": "INTELIGÊNCIA",
+      "subtitulo": "pesquisa · referência · nicho",
+      "cor": "#C7A6F0",
+      "papel": "Alimenta os outros domínios com matéria-prima: fontes, referências, ideias.",
+      "agentes": [
+        {
+          "id": "pesquisa-referencia",
+          "nome": "Pesquisa de referência",
+          "entrega": "Fontes sobre RPG terapêutico, jogos e processo clínico.",
+          "tarefas": ["paper", "case", "livro/sistema"]
+        },
+        {
+          "id": "radar-tendencia",
+          "nome": "Radar de formato",
+          "entrega": "Formatos de vídeo curto que estão funcionando agora.",
+          "tarefas": ["formato", "gancho em alta", "o que saturou"]
+        },
+        {
+          "id": "benchmark-criador",
+          "nome": "Benchmark de nicho",
+          "entrega": "O que outros criadores do nicho fazem — e o buraco que deixam.",
+          "tarefas": ["quem", "o que funciona", "lacuna"]
+        },
+        {
+          "id": "banco-ideias",
+          "nome": "Banco de ideias",
+          "entrega": "Guarda a ideia solta de hoje para o roteiro de daqui a um mês.",
+          "tarefas": ["captura", "agrupa por tema", "puxa na hora certa"]
+        }
+      ]
+    }
+  ]
+}
