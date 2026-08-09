@@ -102,9 +102,17 @@ GLIFOS = {
 
 import artes as _artes
 PECAS = _artes.catalogo(BRASOES_BODY.values())
+FINAIS = HERE / 'artes-finais'   # arte pintada substitui o vetor: ex. artes-finais/C-01.png
+
+def arte_src(code):
+    for ext in ('png', 'jpg', 'jpeg', 'webp'):
+        f = FINAIS / f'{code}.{ext}'
+        if f.exists():
+            return f.as_uri()
+    return _artes.uri(PECAS[code])
 
 def arte(code, cls='arte-meia'):
-    return f'<figure class="{cls}"><img src="{_artes.uri(PECAS[code])}"/></figure>'
+    return f'<figure class="{cls}"><img src="{arte_src(code)}"/></figure>'
 
 ARTE_PARTE = {'LIVRO I': 'B-01', 'LIVRO II': 'B-02', 'LIVRO III': 'B-03',
               'LIVRO IV': 'B-04', 'LIVRO V': 'B-05', 'LIVRO VI': 'B-06',
@@ -529,10 +537,10 @@ def main():
 
     titulo, subtitulo, autor, versao = (fm + ['', '', '', ''])[:4]
 
-    guardas_bg = f"background-image:url('{_artes.uri(PECAS['A-03'])}')"
+    guardas_bg = f"background-image:url('{arte_src('A-03')}')"
     capa = f'''
 <section class="capa">
-  <img class="capa-arte" src="{_artes.uri(PECAS['A-01'])}"/>
+  <img class="capa-arte" src="{arte_src('A-01')}"/>
   <div class="capa-titulo">{esc(titulo)}</div>
   <div class="capa-sub">{esc(subtitulo)}</div>
   <div class="capa-rodape">{esc(autor)} · {esc(versao)}</div>
@@ -548,7 +556,7 @@ def main():
   <p class="rosto-pe">{esc(versao)} · Diagramação conforme o Sistema Gráfico de Dualis</p>
 </section>
 <section class="frontis">
-  <img src="{_artes.uri(PECAS['B-00'])}"/>
+  <img src="{arte_src('B-00')}"/>
   <p class="frontis-legenda">O mapa de Iris termina exatamente ali.</p>
 </section>'''
 
@@ -556,7 +564,7 @@ def main():
 <section class="guardas" style="{guardas_bg}"></section>
 <section class="quarta">
   <div class="quarta-mid">
-    <figure class="quarta-vinheta"><img src="{_artes.uri(PECAS['A-02'])}"/></figure>
+    <figure class="quarta-vinheta"><img src="{arte_src('A-02')}"/></figure>
     <p class="quarta-texto">Há uma porta diante de você. Talvez tenha uma chave. Talvez não.
     Pode escutar, procurar outra entrada, voltar pelo caminho de onde veio — ou abrir.
     Nenhuma dessas ações exige uma rolagem. Mas cada uma muda aquilo que poderá acontecer depois.</p>

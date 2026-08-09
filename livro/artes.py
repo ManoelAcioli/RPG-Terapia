@@ -31,6 +31,93 @@ def svg(body, w, h, defs=''):
 def uri(s):
     return f'data:image/svg+xml,{quote(s)}'
 
+import math
+
+def _rnd(seed):
+    """PRNG determinístico simples (0..1)."""
+    x = math.sin(seed * 127.1 + 311.7) * 43758.5453
+    return x - math.floor(x)
+
+def mancha(cx, cy, rx, ry, color=IND, op=0.10, seed=1, pts=11):
+    """Blob de aguada com borda irregular."""
+    ang = [2 * math.pi * k / pts for k in range(pts)]
+    rr = [(1 + 0.34 * (_rnd(seed + k) - 0.5) * 2) for k in range(pts)]
+    xs = [cx + rx * rr[k] * math.cos(a) for k, a in enumerate(ang)]
+    ys = [cy + ry * rr[k] * math.sin(a) for k, a in enumerate(ang)]
+    d = f'M{xs[0]:.1f} {ys[0]:.1f}'
+    for k in range(pts):
+        j = (k + 1) % pts
+        mx, my = (xs[k] + xs[j]) / 2, (ys[k] + ys[j]) / 2
+        d += f' Q{xs[k]:.1f} {ys[k]:.1f} {mx:.1f} {my:.1f}'
+    d += ' Z'
+    return f'<path d="{d}" fill="{color}" fill-opacity="{op}"/>'
+
+def grao(w, h, seed=3, n=150, color=IND, op=0.13):
+    """Granulação de pigmento / textura de papel."""
+    out = []
+    for k in range(n):
+        x = _rnd(seed + k * 2.1) * w
+        y = _rnd(seed + k * 3.7 + 9) * h
+        r = 0.4 + _rnd(seed + k * 5.3) * 0.8
+        out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{r:.2f}" fill="{color}" fill-opacity="{op}"/>')
+    return ''.join(out)
+
+def respingos(w, h, seed=7, n=9, color=IND, op=0.22):
+    out = []
+    for k in range(n):
+        x = _rnd(seed + k * 11.3) * w
+        y = _rnd(seed + k * 7.9 + 4) * h
+        r = 1.0 + _rnd(seed + k * 3.1) * 1.8
+        out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{r:.2f}" fill="{color}" fill-opacity="{op}"/>')
+    return ''.join(out)
+
+def vinheta(w, h, color=IND):
+    """Escurecimento das bordas, em camadas."""
+    return (f'<rect x="0" y="0" width="{w}" height="{h}" fill="none" stroke="{color}"'
+            f' stroke-width="{min(w,h)*0.16}" stroke-opacity="0.055"/>'
+            f'<rect x="0" y="0" width="{w}" height="{h}" fill="none" stroke="{color}"'
+            f' stroke-width="{min(w,h)*0.07}" stroke-opacity="0.07"/>'
+            f'<rect x="0" y="0" width="{w}" height="{h}" fill="none" stroke="{color}"'
+            f' stroke-width="{min(w,h)*0.025}" stroke-opacity="0.10"/>')
+
+def lavagem(cx, cy, r, color=IND, op=0.16, achatada=1.0):
+    """Lavagem suave: gradiente radial sem borda dura. Retorna (defs, corpo)."""
+    i = _id()
+    d = (f'<radialGradient id="{i}"><stop offset="0" stop-color="{color}" stop-opacity="{op}"/>'
+         f'<stop offset="0.65" stop-color="{color}" stop-opacity="{op*0.55:.3f}"/>'
+         f'<stop offset="1" stop-color="{color}" stop-opacity="0"/></radialGradient>')
+    b = (f'<ellipse cx="{cx}" cy="{cy}" rx="{r}" ry="{r*achatada:.1f}" fill="url(#{i})"/>')
+    return d, b
+
+def fundo_prato(w, h, seed=1, forca=1.0):
+    """Atmosfera de aguada para as pranchas. Retorna (defs, corpo)."""
+    o = lambda v: min(0.85, v * forca)
+    j = lambda k, a, b: a + (_rnd(seed * 3.3 + k) * (b - a))
+    defs, corpo = '', f'<rect width="{w}" height="{h}" fill="{IND}" fill-opacity="{o(0.06):.3f}"/>'
+    manchas = [
+        (j(1, 0.12, 0.32) * w, j(2, 0.08, 0.28) * h, 0.42 * w, o(0.14), 0.7),
+        (j(3, 0.68, 0.92) * w, j(4, 0.14, 0.42) * h, 0.36 * w, o(0.11), 0.9),
+        (0.5 * w, 1.02 * h, 0.55 * w, o(0.16), 0.45),
+        (j(5, 0.3, 0.7) * w, j(6, 0.4, 0.7) * h, 0.5 * w, o(0.06), 0.8),
+    ]
+    for cx, cy, r, op, ach in manchas:
+        d, b = lavagem(cx, cy, r, IND, op, ach)
+        defs += d
+        corpo += b
+    corpo += mancha(w * j(7, 0.2, 0.8), h * j(8, 0.15, 0.5), w * 0.3, h * 0.24, IND, o(0.035), seed + 9)
+    return defs, corpo
+
+def prato(corpo, w, h, defs='', seed=None, forca=1.0):
+    """Prancha completa: aguada de fundo + cena + granulação + vinheta."""
+    if seed is None:
+        seed = len(corpo) % 97
+    fd, fb = fundo_prato(w, h, seed, forca)
+    return svg(fb + corpo
+               + grao(w, h, seed + 5, n=int(w * h / 620))
+               + respingos(w, h, seed + 6)
+               + vinheta(w, h), w, h, defs + fd)
+
+
 def P(d, fill='none', stroke=None, w=1.6, op=None, dash=None, cap='round'):
     a = f'<path d="{d}" fill="{fill}"'
     if stroke:
@@ -156,29 +243,75 @@ def _base_c():
     return R(0, 0, CW, CH, fill=IND, op=0.045)
 
 def c01_vigia():
-    d1, g1 = glow(175, 52, 60)
+    """Sentinela de armadura sob um arco de pedra; capuz de muitos olhos,
+    lanterna acesa numa mão, a outra aberta, oferecendo. Água parada aos pés."""
+    d1, g1 = glow(150, 196, 52, LAT, 0.65)
+    d2, g2 = glow(150, 196, 24, LAT, 0.9)
     corpo = (
-        _base_c()
-        + monte(60, 270, 190, 90, op=0.14) + monte(300, 270, 200, 70, op=0.10)
-        + hachura(0, 210, 350, 60, gap=10, op=0.12)
-        # torre vista de baixo
-        + P('M130 270 L158 60 L192 60 L220 270 Z', fill=IND, op=0.16)
-        + P('M130 270 L158 60 L192 60 L220 270', stroke=IND, w=2.2)
-        + P('M150 200 h50 M144 232 h62 M156 168 h40', stroke=IND, w=1.2)
-        # sentinela no alto: constelação de olhos (elipses pequenas, direções várias)
-        + P('M158 60 Q175 30 192 60', stroke=IND, w=2)
-        + E(166, 46, 5, 3, stroke=IND, sw=1.3) + E(184, 44, 5, 3, stroke=IND, sw=1.3)
-        + E(175, 34, 5, 3, stroke=IND, sw=1.3) + E(160, 34, 4, 2.6, stroke=IND, sw=1.2)
-        + E(190, 34, 4, 2.6, stroke=IND, sw=1.2)
-        + C(166, 46, 1, fill=IND) + C(184, 44, 1, fill=IND) + C(175, 34, 1, fill=IND)
-        # lanterna acesa numa mão; a outra aberta
-        + g1
-        + P('M203 66 l16 -10', stroke=IND, w=2)
-        + R(216, 46, 10, 14, stroke=IND, sw=1.6) + C(221, 53, 2.6, fill=LAT)
-        + P('M150 72 l-18 6 m18 -6 l-16 12', stroke=IND, w=2)
-        + nevoa(120, CW, 20, 0.4)
+        # parede de pedra à direita, arco à esquerda
+        mancha(300, 130, 90, 160, IND, 0.22, 31)
+        + P('M258 0 V270 M258 0 H350 V270', stroke=IND, w=0, cap='butt')
+        + R(252, 0, 98, 270, fill=IND, op=0.16)
+        + ''.join(P(f'M{262 + (k % 3) * 26} {18 + k * 24} h{18 + (k % 2) * 8}',
+                    stroke=IND, w=1, op=0.35) for k in range(10))
+        + P('M64 270 V96 Q64 10 170 6', stroke=IND, w=3.4)
+        + P('M50 270 V98 Q50 -2 170 -8', stroke=IND, w=2)
+        + P('M50 270 V98 Q50 -2 170 -8 L170 6 Q64 10 64 96 L64 270 Z', fill=IND, op=0.30)
+        + mancha(30, 60, 70, 90, IND, 0.28, 32)
+        + hachura(0, 0, 64, 270, gap=9, op=0.18)
+        # muralha distante com torre, sob céu de aguada
+        + P('M0 208 h44 M8 208 v-26 h20 v26', stroke=IND, w=1.4, op=0.55)
+        + P('M18 182 q4 -10 10 -12 q6 2 8 12', stroke=IND, w=1.2, op=0.55)
+        # ÁGUA parada aos pés
+        + R(0, 244, 350, 26, fill=IND, op=0.20)
+        + P('M12 250 h44 M70 256 h60 M210 252 h52 M290 260 h40', stroke=PAPEL, w=1, op=0.5)
+        # ------------- a criatura -------------
+        # capa e saiote
+        + P('M186 244 L180 150 Q176 120 186 108 L226 108 Q238 122 232 152 L228 244 '
+            'Q206 252 186 244 Z', fill=IND, op=0.88)
+        + P('M228 150 Q252 176 246 244 L228 236', fill=IND, op=0.5)      # capa às costas
+        + P('M186 176 h44 M188 190 h42', stroke=PAPEL, w=1, op=0.35)     # placas do saiote
+        # couraça com rebites
+        + P('M184 116 Q206 104 230 116 L232 152 Q206 162 182 152 Z', fill=IND, op=0.95)
+        + P('M184 116 Q206 104 230 116 L232 152 Q206 162 182 152 Z', stroke=IND, w=1.6)
+        + P('M190 124 Q206 116 224 124 M188 136 Q206 128 226 136', stroke=PAPEL, w=1, op=0.45)
+        + ''.join(C(190 + k * 8, 148 - (k % 2) * 3, 0.9, fill=PAPEL, op=0.7) for k in range(6))
+        # cinto e bolsa
+        + P('M184 152 Q206 162 232 152', stroke=LAT, w=2.4, op=0.8)
+        + P('M222 158 q10 2 10 12 q-6 4 -12 0 Z', fill=IND, op=0.95)
+        + C(227, 164, 1.1, fill=LAT, op=0.9)
+        # botas na água
+        + P('M196 244 v14 M220 244 v14', stroke=IND, w=7)
+        + E(196, 261, 9, 3, fill=IND, op=0.9) + E(220, 261, 9, 3, fill=IND, op=0.9)
+        # braço com a lanterna
+        + P('M188 122 Q168 138 162 168', stroke=IND, w=7)
+        + P('M162 168 q-4 6 -12 6', stroke=IND, w=4)
+        + g1 + g2
+        + P('M150 174 v6', stroke=IND, w=1.6)
+        + P('M141 182 h18 l-3 26 h-12 Z', stroke=IND, w=1.8)
+        + P('M141 182 q9 -8 18 0', stroke=IND, w=1.6)
+        + R(145, 187, 10, 16, fill=LAT, op=0.85)
+        + C(150, 195, 3, fill=PAPEL, op=0.9)
+        + E(150, 246, 26, 5, fill=LAT, op=0.25)                          # luz na água
+        # braço oferecido, mão aberta
+        + P('M228 122 Q258 128 278 142', stroke=IND, w=7)
+        + P('M278 142 q10 4 14 10 m-14 -10 q12 0 18 4 m-18 -4 q8 8 8 14',
+            stroke=IND, w=2.6)
+        # cabeça encapuzada, constelação de olhos (sem rosto humano)
+        + P('M192 108 Q188 76 206 68 Q226 66 228 92 Q229 104 224 108 Z', fill=IND, op=0.96)
+        + P('M192 108 Q188 76 206 68 Q226 66 228 92 Q229 104 224 108 Z', stroke=IND, w=1.4)
+        # olhos: elipses com pupila, apontando para direções diferentes
+        + E(201, 82, 3.6, 2.3, fill=PAPEL, op=0.92) + C(202, 82, 1, fill=IND)
+        + E(212, 76, 3.4, 2.2, fill=PAPEL, op=0.92) + C(211, 76, 1, fill=IND)
+        + E(220, 86, 3.2, 2.1, fill=PAPEL, op=0.92) + C(221, 86, 0.9, fill=IND)
+        + E(206, 94, 3.4, 2.2, fill=PAPEL, op=0.92) + C(205, 94, 1, fill=IND)
+        + E(216, 99, 3, 2, fill=PAPEL, op=0.92) + C(217, 99, 0.9, fill=IND)
+        + E(197, 99, 2.7, 1.8, fill=PAPEL, op=0.85) + C(196, 99, 0.8, fill=IND)
+        + E(224, 76, 2.5, 1.7, fill=PAPEL, op=0.8) + C(224, 76, 0.8, fill=IND)
+        # gotejar de chuva fina junto ao arco
+        + chuva(60, 30, 90, 40, 8, IND, 0.35)
     )
-    return svg(corpo, CW, CH, d1)
+    return prato(corpo, CW, CH, d1 + d2, seed=17, forca=1.25)
 
 def c02_estrategista():
     corpo = (
@@ -199,7 +332,7 @@ def c02_estrategista():
         + P('M226 187 v-3', stroke=LAT, w=1.2)
         + hachura(60, 40, 46, 40, gap=8, op=0.2) + hachura(244, 40, 46, 40, gap=8, op=0.2)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c03_rastreador():
     corpo = (
@@ -218,7 +351,7 @@ def c03_rastreador():
         + P('M264 163 q2 -2 4 0 M273 163 q2 -2 4 0', stroke=IND, w=0.8, op=0.7)
         + nevoa(246, CW, 16, 0.35)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c04_guardiao():
     corpo = (
@@ -235,7 +368,7 @@ def c04_guardiao():
         + P('M170 172 l10 8 M180 172 l-10 8', stroke=LAT, w=1.2)
         + P('M100 250 h150', stroke=IND, w=1.4)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c05_adiador():
     corpo = (
@@ -256,7 +389,7 @@ def c05_adiador():
                   R(212 + (k % 3) * 2, 168 - k * 9, 64, 9, stroke=IND, sw=0.9)
                   for k in range(14))
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c06_eremita():
     d1, g1 = glow(214, 96, 42)
@@ -274,7 +407,7 @@ def c06_eremita():
         + fig(46, 252, 54, op=0.35) + fig(76, 254, 60, op=0.4) + fig(296, 252, 58, op=0.38)
         + P('M0 254 h350', stroke=IND, w=1.4)
     )
-    return svg(corpo, CW, CH, d1)
+    return prato(corpo, CW, CH, d1)
 
 def c07_juiz():
     corpo = (
@@ -291,7 +424,7 @@ def c07_juiz():
         + P('M112 214 H238', stroke=IND, w=1.8)
         + nevoa(230, CW, 22, 0.3)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c08_carrasco():
     corpo = (
@@ -307,7 +440,7 @@ def c08_carrasco():
         + P('M258 150 Q236 158 240 182 Q252 174 258 176 Z', fill=IND, op=0.85)
         + P('M60 250 h230', stroke=IND, w=1.4)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c09_artesao():
     corpo = (
@@ -327,7 +460,7 @@ def c09_artesao():
         # mãos de trabalho (só mãos, sem pessoa)
         + P('M214 196 q-6 -12 4 -16 M300 196 q8 -10 -2 -16', stroke=IND, w=2)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c10_camaleao():
     corpo = (
@@ -343,7 +476,7 @@ def c10_camaleao():
         + C(175, 142, 11, fill=IND, op=0.75)
         + C(175, 142, 11, stroke=IND, sw=1.2)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c11_ator():
     d1, g1 = glow(175, 96, 74, LAT, 0.5)
@@ -366,7 +499,7 @@ def c11_ator():
         + R(298, 60, 40, 130, fill=IND, op=0.15)
         + ''.join(P(f'M{306 + k * 9} 74 q4 10 0 104', stroke=IND, w=1.2, op=0.7) for k in range(4))
     )
-    return svg(corpo, CW, CH, d1)
+    return prato(corpo, CW, CH, d1)
 
 def c12_herdeiro():
     corpo = (
@@ -387,7 +520,7 @@ def c12_herdeiro():
         + P('M164 160 l8 12 8 -12 v16 h-16 Z', fill=LAT, op=0.85)     # brasão que não escolheu
         + P('M60 250 h240', stroke=IND, w=1.4)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c13_oraculo():
     corpo = (
@@ -404,7 +537,7 @@ def c13_oraculo():
         + P('M196 234 q10 -12 20 0 M226 236 l16 -10 m-6 10 l10 -6', stroke=LAT, w=1.3)
         + nevoa(140, CW, 18, 0.3)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c14_leitor():
     corpo = (
@@ -422,7 +555,7 @@ def c14_leitor():
             stroke=LAT, w=0.9, dash='5 4')
         + C(106, 104, 2, fill=LAT) + C(216, 110, 2, fill=LAT) + C(150, 150, 2, fill=LAT)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c15_pressagio():
     d1, g1 = ceu(CW, CH, IND, 0.10, 0.02)
@@ -438,7 +571,7 @@ def c15_pressagio():
         + P('M30 74 Q120 52 210 66 Q290 76 330 60 Q300 92 210 88 Q110 94 30 74 Z',
             fill=IND, op=0.55)
     )
-    return svg(corpo, CW, CH, d1)
+    return prato(corpo, CW, CH, d1)
 
 def c16_colecionador():
     corpo = (
@@ -455,7 +588,7 @@ def c16_colecionador():
         + R(154, 172, 24, 16, fill=IND, op=0.25)
         + P('M60 250 h230', stroke=IND, w=1.4)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c17_inventariante():
     corpo = (
@@ -475,7 +608,7 @@ def c17_inventariante():
         + ''.join(P(f'M227 {162 + k * 9} h10', stroke=IND, w=0.9) for k in range(9))
         + P('M60 250 h230', stroke=IND, w=1.4)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c18_contabilista():
     corpo = (
@@ -494,7 +627,7 @@ def c18_contabilista():
         + P('M151 194 l-7 14 h14 Z', fill=IND, op=0.7)
         + P('M199 194 l-7 20 h14 Z', fill=IND, op=0.7)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c19_devedor():
     corpo = (
@@ -510,7 +643,7 @@ def c19_devedor():
         + R(248, 200, 30, 22, stroke=IND, sw=1.4)
         + P('M250 186 h26 M256 163 h22 M248 211 h30', stroke=IND, w=0.8, op=0.6)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c20_salvador():
     corpo = (
@@ -528,7 +661,7 @@ def c20_salvador():
         # atrás, no seco, três pessoas capazes, olhando
         + fig(288, 196, 62, op=0.5) + fig(312, 198, 66, op=0.55) + fig(334, 196, 58, op=0.5)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c21_abandonado():
     d1, g1 = glow(232, 148, 40, LAT, 0.5)
@@ -547,7 +680,7 @@ def c21_abandonado():
         # rua vazia à frente
         + P('M0 250 h350', stroke=IND, w=1.4)
     )
-    return svg(corpo, CW, CH, d1)
+    return prato(corpo, CW, CH, d1)
 
 def c22_duplo():
     corpo = (
@@ -566,7 +699,7 @@ def c22_duplo():
         # quem se olha não aparece no quadro
         + nevoa(238, CW, 32, 0.25)
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c23_invisivel():
     corpo = (
@@ -580,7 +713,7 @@ def c23_invisivel():
         + P('M258 216 v22 M263 216 v22', stroke=IND, w=1.2)
         + R(226, 252, 26, 14, stroke=IND, sw=1.4)                     # cadeira afastada
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 def c24_silenciador():
     corpo = (
@@ -599,7 +732,7 @@ def c24_silenciador():
         + P('M162 130 l16 5 M160 134 l14 4', stroke=IND, w=0.9, op=0.7)
         + P('M192 140 Q206 152 204 170', stroke=IND, w=2)              # pulso relaxado
     )
-    return svg(corpo, CW, CH)
+    return prato(corpo, CW, CH)
 
 # ============================================================ LOTE E · spots
 SW_, SH_ = 320, 180
@@ -802,7 +935,7 @@ def b00_ponte():
         + P('M154 310 q8 -4 16 2', stroke=IND, w=0.8)
         + nevoa(380, BW, 40, 0.35)
     )
-    return svg(corpo, BW, BH, d1 + d2)
+    return prato(corpo, BW, BH, d1 + d2)
 
 def b01_mesa():
     d1, g1 = glow(380, 130, 180, LAT, 0.30)
@@ -820,7 +953,7 @@ def b01_mesa():
         + R(310, 380, 140, 22, stroke=IND, sw=3)
         + P('M320 402 V480 M440 402 V480 M310 380 Q380 366 450 380', stroke=IND, w=3)
     )
-    return svg(corpo, BW, BH, d1)
+    return prato(corpo, BW, BH, d1)
 
 def b02_ficha():
     corpo = (
@@ -838,7 +971,7 @@ def b02_ficha():
         + C(490, 380, 14, stroke=LAT, sw=2.6)
         + P('M502 386 l50 22 m-16 -8 l-6 12 m18 -4 l-6 12', stroke=LAT, w=2.6)
     )
-    return svg(corpo, BW, BH)
+    return prato(corpo, BW, BH)
 
 def b03_vilarejo():
     d1, g1 = ceu(BW, BH, IND, 0.5, 0.10)
@@ -858,7 +991,7 @@ def b03_vilarejo():
         + P('M0 380 h760', stroke=IND, w=2)
         + nevoa(392, BW, 30, 0.4)
     )
-    return svg(corpo, BW, BH, d1 + d2)
+    return prato(corpo, BW, BH, d1 + d2)
 
 def b04_tela():
     corpo = (
@@ -874,7 +1007,7 @@ def b04_tela():
         + E(570, 268, 44, 8, stroke=IND, sw=1, op=0.4)
         + P('M556 168 q6 -12 0 -22 M584 168 q6 -12 0 -22', stroke=IND, w=1.2, op=0.5)
     )
-    return svg(corpo, BW, BH)
+    return prato(corpo, BW, BH)
 
 def b05_torre():
     d1, g1 = ceu(BW, BH, IND, 0.5, 0.08)
@@ -893,7 +1026,7 @@ def b05_torre():
         + P('M0 452 h760', stroke=IND, w=2)
         + nevoa(410, BW, 26, 0.3)
     )
-    return svg(corpo, BW, BH, d1 + d2)
+    return prato(corpo, BW, BH, d1 + d2)
 
 def b06_mapa():
     corpo = (
@@ -911,7 +1044,7 @@ def b06_mapa():
         + C(150, 108, 13, fill=IND, op=0.6) + R(590, 96, 30, 22, fill=IND, op=0.5)
         + E(608, 390, 20, 12, fill=IND, op=0.5)
     )
-    return svg(corpo, BW, BH)
+    return prato(corpo, BW, BH)
 
 def b07_estrada():
     d1, g1 = ceu(BW, BH, IND, 0.30, 0.05)
@@ -931,7 +1064,7 @@ def b07_estrada():
         + P('M0 460 h760', stroke=IND, w=2)
         + nevoa(200, BW, 60, 0.5)
     )
-    return svg(corpo, BW, BH, d1)
+    return prato(corpo, BW, BH, d1)
 
 # ============================================================ LOTE T · territórios
 TW, TH = 640, 300
@@ -951,7 +1084,7 @@ def t01_desconhecido():
         + R(126, 190, 12, 26, fill=IND, op=0.10)
         + fig(340, 246, 34, op=0.5)
     )
-    return svg(corpo, TW, TH, d1)
+    return prato(corpo, TW, TH, d1)
 
 def t02_muralha():
     corpo = (
@@ -971,7 +1104,7 @@ def t02_muralha():
         + P('M580 200 q26 -6 34 -22', stroke=LAT, w=2, dash='5 5')
         + P('M0 240 h640', stroke=IND, w=2)
     )
-    return svg(corpo, TW, TH)
+    return prato(corpo, TW, TH)
 
 def t03_encruzilhada():
     d1, g1 = ceu(TW, TH, IND, 0.22, 0.04)
@@ -990,7 +1123,7 @@ def t03_encruzilhada():
         + P('M388 156 l-16 2 M412 144 l16 -2', stroke=IND, w=1.2, dash='2 4')
         + P('M0 268 h640', stroke=IND, w=1.6)
     )
-    return svg(corpo, TW, TH, d1)
+    return prato(corpo, TW, TH, d1)
 
 def t04_porta_fechada():
     corpo = (
@@ -1007,7 +1140,7 @@ def t04_porta_fechada():
         + R(150, 110, 40, 30, stroke=IND, sw=1.2) + P('M150 110 l40 4', stroke=IND, w=0)
         + E(480, 234, 16, 8, stroke=IND, sw=1.4) + P('M474 228 q6 -18 12 0', stroke=VER, w=1.6)
     )
-    return svg(corpo, TW, TH)
+    return prato(corpo, TW, TH)
 
 def t05_lugar_mesa():
     d1, g1 = glow(320, 130, 160, LAT, 0.30)
@@ -1024,7 +1157,7 @@ def t05_lugar_mesa():
         + R(346, 152, 24, 20, stroke=LAT, sw=2)
         + P('M348 152 v-16 h20 v16', stroke=LAT, w=2)
     )
-    return svg(corpo, TW, TH, d1)
+    return prato(corpo, TW, TH, d1)
 
 def t06_olhos():
     corpo = (
@@ -1039,7 +1172,7 @@ def t06_olhos():
                          (410, 120), (390, 230), (470, 170), (250, 250), (500, 90),
                          (540, 220), (100, 160)])
     )
-    return svg(corpo, TW, TH)
+    return prato(corpo, TW, TH)
 
 def t07_cordas():
     d1, g1 = ceu(TW, TH, IND, 0.18, 0.03)
@@ -1059,7 +1192,7 @@ def t07_cordas():
         + fig(520, 190, 44, op=0.8) + P('M520 148 l6 -10', stroke=IND, w=1.4, op=0.7)
         + C(560, 60, 14, stroke=IND, sw=1, op=0.5)
     )
-    return svg(corpo, TW, TH, d1)
+    return prato(corpo, TW, TH, d1)
 
 def t08_coroa():
     corpo = (
@@ -1076,7 +1209,7 @@ def t08_coroa():
                   + R(300 + (k % 2) * 3, 168 - k * 5, 44, 5, stroke=IND, sw=0.7) for k in range(5))
         + P('M352 148 l20 -6', stroke=LAT, w=1.6)                     # a pena espera
     )
-    return svg(corpo, TW, TH)
+    return prato(corpo, TW, TH)
 
 def t09_balanca():
     d1, g1 = glow(150, 130, 40, LAT, 0.7)
@@ -1094,7 +1227,7 @@ def t09_balanca():
         + fig(320, 290, 62, op=0.95)
         + P('M0 292 h640', stroke=IND, w=1.6)
     )
-    return svg(corpo, TW, TH, d1 + d2)
+    return prato(corpo, TW, TH, d1 + d2)
 
 def t10_espelho():
     d1, g1 = glow(430, 90, 46, LAT, 0.6)
@@ -1111,7 +1244,7 @@ def t10_espelho():
         + R(266, 250, 68, 26, fill=LAT, op=0.9) + R(266, 250, 68, 26, stroke=IND, sw=1.6)
         + P('M290 250 v26 M312 250 v26', stroke=IND, w=1.2)
     )
-    return svg(corpo, TW, TH, d1)
+    return prato(corpo, TW, TH, d1)
 
 def t11_ruina():
     d1, g1 = glow(430, 190, 50, LAT, 0.75)
@@ -1132,7 +1265,7 @@ def t11_ruina():
         + P('M436 216 q4 -12 -2 -20 q10 6 8 20 Z', fill=LAT, op=0.9)  # chama pequena
         + P('M0 250 h640', stroke=IND, w=2)
     )
-    return svg(corpo, TW, TH, d1)
+    return prato(corpo, TW, TH, d1)
 
 def t12_travessia():
     d1, g1 = ceu(TW, TH, IND, 0.2, 0.03)
@@ -1155,7 +1288,7 @@ def t12_travessia():
         + P('M190 216 q60 10 110 12', stroke=IND, w=1, dash='3 6', op=0.6)  # a corda ainda solta
         + P('M240 264 q40 8 80 0 M420 268 q40 8 80 0', stroke=IND, w=1, op=0.4)
     )
-    return svg(corpo, TW, TH, d1)
+    return prato(corpo, TW, TH, d1)
 
 # ============================================================ LOTE F · os Quatro
 FW, FH = 420, 560
@@ -1184,7 +1317,7 @@ def f01_iris():
         + P('M186 470 l10 8', stroke=LAT, w=1.8)
         + P('M60 530 h300', stroke=IND, w=1.6)
     )
-    return svg(corpo, FW, FH)
+    return prato(corpo, FW, FH)
 
 def f02_tavi():
     corpo = (
@@ -1202,7 +1335,7 @@ def f02_tavi():
         + P('M192 342 Q216 332 238 344', stroke=PAPEL, w=1.6, op=0.5)
         + P('M196 372 Q216 362 236 372', stroke=PAPEL, w=1.2, op=0.35)
     )
-    return svg(corpo, FW, FH)
+    return prato(corpo, FW, FH)
 
 def f03_beren():
     corpo = (
@@ -1222,7 +1355,7 @@ def f03_beren():
         + P('M268 438 h44', stroke=IND, w=1.2)
         + P('M288 406 v-10', stroke=LAT, w=2)                          # fecho de latão
     )
-    return svg(corpo, FW, FH)
+    return prato(corpo, FW, FH)
 
 def f04_wren():
     corpo = (
@@ -1240,7 +1373,7 @@ def f04_wren():
         # rosto deliberadamente pouco individualizado: nada além da silhueta
         + P('M120 446 h180', stroke=IND, w=1, op=0.4)
     )
-    return svg(corpo, FW, FH)
+    return prato(corpo, FW, FH)
 
 # ============================================================ LOTE G · crônicas
 GW, GH = 640, 300
@@ -1260,7 +1393,7 @@ def g01_vespera():
         + R(acesas[16][0] + 1, acesas[16][1], 9, 11, fill=IND, op=0.95)
         + R(acesas[16][0] - 1, acesas[16][1] - 2, 13, 15, stroke=PAPEL, sw=1, op=0.6)
     )
-    return svg(corpo, GW, GH, d1)
+    return prato(corpo, GW, GH, d1)
 
 def g02_arken():
     d1, g1 = glow(320, 150, 90, LAT, 0.30)
@@ -1278,7 +1411,7 @@ def g02_arken():
         + P('M60 300 h520', stroke=IND, w=2)
         + fig(150, 296, 52, op=0.7) + fig(500, 296, 48, op=0.6)
     )
-    return svg(corpo, GW, GH, d1)
+    return prato(corpo, GW, GH, d1)
 
 def g03_torre_espelhos():
     d1, g1 = ceu(GW, GH, IND, 0.30, 0.06)
@@ -1297,7 +1430,7 @@ def g03_torre_espelhos():
         + P('M0 280 h640', stroke=IND, w=2)
         + fig(380, 276, 40, op=0.6)
     )
-    return svg(corpo, GW, GH, d1)
+    return prato(corpo, GW, GH, d1)
 
 def g04_trem():
     d1, g1 = glow(120, 140, 70, LAT, 0.5)
@@ -1320,7 +1453,7 @@ def g04_trem():
         + fig(210, 248, 54, op=0.95)
         + P('M222 216 l14 -4', stroke=PAPEL, w=2)
     )
-    return svg(corpo, GW, GH, d1)
+    return prato(corpo, GW, GH, d1)
 
 def g05_vila():
     corpo = (
@@ -1337,7 +1470,7 @@ def g05_vila():
         + P('M0 280 h640', stroke=IND, w=2)
         + fig(320, 276, 48, op=0.8) + fig(354, 278, 42, op=0.6)
     )
-    return svg(corpo, GW, GH)
+    return prato(corpo, GW, GH)
 
 def g06_jardim():
     d1, g1 = glow(320, 200, 120, VER, 0.25)
@@ -1358,7 +1491,7 @@ def g06_jardim():
         + E(196, 308, 12, 4, stroke=IND, sw=1.2)
         + P('M0 310 h640', stroke=IND, w=0)
     )
-    return svg(corpo, GW, GH, d1)
+    return prato(corpo, GW, GH, d1)
 
 # ============================================================ LOTE H · mapas
 
@@ -1476,8 +1609,15 @@ def a01_capa():
         + C(380, 496, 24, fill='#141E2D')
         + P('M402 512 Q414 548 418 590', stroke=LAT, w=1.4, op=0.5)
         + P('M356 700 L352 720 M404 700 L408 720', stroke='#141E2D', w=3)
+        # textura de aguada e granulação
+        + grao(W, H, 44, 420, PAPEL, 0.05)
     )
-    return svg(corpo, W, H, d1)
+    d2, g2 = lavagem(180, 150, 300, PAPEL, 0.06, 0.7)
+    d3, g3 = lavagem(620, 320, 260, PAPEL, 0.05, 0.8)
+    d4, g4 = lavagem(380, 860, 360, IND, 0.16, 0.5)
+    corpo = g2 + g3 + corpo + g4
+    corpo += vinheta(W, H, '#101826')
+    return svg(corpo, W, H, d1 + d2 + d3 + d4)
 
 def a02_quarta():
     W, H = 760, 420
