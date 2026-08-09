@@ -100,6 +100,32 @@ GLIFOS = {
                        '<path d="M31 21 a8 8 0 1 1 0 12" stroke-width="1.6" stroke-dasharray="2.5 3"/>', color=L),
 }
 
+import artes as _artes
+PECAS = _artes.catalogo(BRASOES_BODY.values())
+
+def arte(code, cls='arte-meia'):
+    return f'<figure class="{cls}"><img src="{_artes.uri(PECAS[code])}"/></figure>'
+
+ARTE_PARTE = {'LIVRO I': 'B-01', 'LIVRO II': 'B-02', 'LIVRO III': 'B-03',
+              'LIVRO IV': 'B-04', 'LIVRO V': 'B-05', 'LIVRO VI': 'B-06',
+              'LIVRO VII': 'B-07'}
+ARTE_SPOT = {4: 'S-08', 10: 'S-02', 11: 'S-03', 13: 'S-04', 14: 'S-05', 15: 'S-06',
+             16: 'S-07', 17: 'S-11', 18: 'S-09', 20: 'S-12', 22: 'S-13', 23: 'S-14'}
+ARTE_TERRITORIO = {29: 'T-01', 30: 'T-06', 31: 'T-04', 32: 'T-05', 33: 'T-07',
+                   34: 'T-08', 35: 'T-09', 36: 'T-10', 37: 'T-03', 38: 'T-11',
+                   39: 'T-02', 40: 'T-12'}
+ARTE_CRONICA = {42: 'G-01', 43: 'G-02', 44: 'G-03', 45: 'G-04', 46: 'G-05', 47: 'G-06'}
+ARTE_CRIATURA = {
+    'O VIGIA': 'C-01', 'O ESTRATEGISTA': 'C-02', 'O RASTREADOR': 'C-03',
+    'O GUARDIÃO': 'C-04', 'O ADIADOR': 'C-05', 'O EREMITA': 'C-06', 'O JUIZ': 'C-07',
+    'O CARRASCO': 'C-08', 'O ARTESÃO IMPOSSÍVEL': 'C-09', 'O CAMALEÃO': 'C-10',
+    'O ATOR': 'C-11', 'O HERDEIRO': 'C-12', 'O ORÁCULO': 'C-13',
+    'O LEITOR DE SINAIS': 'C-14', 'O PRESSÁGIO': 'C-15', 'O COLECIONADOR': 'C-16',
+    'O INVENTARIANTE': 'C-17', 'O CONTABILISTA': 'C-18', 'O DEVEDOR': 'C-19',
+    'O SALVADOR': 'C-20', 'O ABANDONADO': 'C-21', 'O DUPLO': 'C-22',
+    'O INVISÍVEL': 'C-23', 'O SILENCIADOR': 'C-24'}
+ARTE_RETRATO = {'IRIS': 'F-01', 'TAVI': 'F-02', 'BEREN': 'F-03', 'WREN': 'F-04'}
+
 _REGUA_SVG = (
     '<path d="M0 6 H266" stroke="#26364F" stroke-width="1.6"/>'
     '<path d="M272 6 H288" stroke="#26364F" stroke-width="1.6" stroke-dasharray="1.2 3.4"/>'
@@ -229,6 +255,7 @@ class Builder:
         self.toc = []           # (nível, id, kicker, título)
         self.sec_n = 0
         self.corpo_desde_abertura = False
+        self.abre_cap = False
 
     # ---- helpers de fluxo
     def emit(self, s):
@@ -304,7 +331,9 @@ class Builder:
         sub = ''
         if title == 'BESTIÁRIO DE PADRÕES':
             sub = '<p class="part-sub">Toda criatura deste livro aprendeu, alguma vez, a proteger alguma coisa.</p>'
-        self.emit(f'<section class="part" id="{pid}">'
+        art = arte(ARTE_PARTE[kicker], 'arte-parte') if kicker in ARTE_PARTE else ''
+        cls = 'part com-arte' if art else 'part'
+        self.emit(f'<section class="{cls}" id="{pid}">{art}'
                   f'{REGUA}'
                   f'<div class="part-kicker">{esc(kicker)}</div>'
                   f'<h1>{esc(title_d)}</h1>{sub}</section>')
@@ -325,6 +354,19 @@ class Builder:
         self.emit(f'<section class="chapter" id="{cid}">{REGUA}'
                   f'<div class="chap-kicker">{esc(kicker.upper())}</div>'
                   f'<h2>{esc(title_d)}</h2></section>')
+        mnum = re.match(r'Capítulo (\d+)$', kicker)
+        num = int(mnum.group(1)) if mnum else None
+        if num in ARTE_TERRITORIO:
+            self.emit(arte(ARTE_TERRITORIO[num], 'arte-meia'))
+        elif num in ARTE_CRONICA:
+            self.emit(arte(ARTE_CRONICA[num], 'arte-meia'))
+        elif num in ARTE_SPOT:
+            self.emit(arte(ARTE_SPOT[num], 'arte-spot'))
+        if num == 28:
+            self.emit(arte('H-01', 'arte-pagina'))
+        if title == 'O Atlas em uma página':
+            self.emit(arte('H-03', 'arte-meia'))
+        self.abre_cap = True
 
     def family_open(self, text):
         m = re.match(r'FAMÍLIA ([IVX]+):\s*(.*)', text)
@@ -342,8 +384,12 @@ class Builder:
         if self.family and text.startswith('O '):
             self.emit(f'<h3 class="criatura"><span class="brasao brasao-mini">'
                       f'{BRASOES_MINI[self.family]}</span>{esc(titlecase(text))}</h3>')
+            if text in ARTE_CRIATURA:
+                self.emit(arte(ARTE_CRIATURA[text], 'arte-retrato'))
         else:
             self.emit(f'<h3>{esc(titlecase(text))}</h3>')
+            if text in ARTE_RETRATO:
+                self.emit(arte(ARTE_RETRATO[text], 'arte-flutua'))
 
     def h4(self, text):
         if text == 'CAMADA DO MESTRE':
@@ -366,11 +412,14 @@ class Builder:
             return
         self.close_aside()
         self.emit(f'<h4>{esc(titlecase(text))}</h4>')
+        if text == 'Sessão exemplar anotada':
+            self.emit(arte('H-02', 'arte-meia'))
 
     def h5(self, text):
         self.close_aside()
         self.emit(f'<h5>{esc(titlecase(text))}</h5>')
         if text.strip().upper() == 'O TRILHO DE TRÊS CONVITES':
+            self.emit(arte('S-10', 'arte-spot'))
             self.emit(TRILHO_SVG)
 
     def h6(self, text):
@@ -399,12 +448,17 @@ class Builder:
             self.emit(f'<p class="nota-consolidacao">{esc(text)}</p>')
             return
         if text.count(' - ') >= 2:
+            self.abre_cap = False
             head, *items = text.split(' - ')
             h = ''
             if head.strip():
                 h += f'<p class="lista-intro">{fmt_inline(head.strip())}</p>'
             h += '<ul class="tracos">' + ''.join(f'<li>{fmt_inline(i.strip())}</li>' for i in items) + '</ul>'
             self.emit(h)
+            return
+        if self.abre_cap:
+            self.abre_cap = False
+            self.emit(f'<p class="abre">{fmt_inline(text)}</p>')
             return
         self.emit(f'<p>{fmt_inline(text)}</p>')
 
@@ -475,17 +529,15 @@ def main():
 
     titulo, subtitulo, autor, versao = (fm + ['', '', '', ''])[:4]
 
+    guardas_bg = f"background-image:url('{_artes.uri(PECAS['A-03'])}')"
     capa = f'''
 <section class="capa">
-  <div class="capa-indigo">
-    <div class="capa-titulo">{esc(titulo)}</div>
-    <div class="capa-sub">{esc(subtitulo)}</div>
-  </div>
-  <div class="capa-latao">
-    <div class="capa-autor">{esc(autor)}</div>
-    <div class="capa-versao">{esc(versao)} · Edição diagramada de trabalho</div>
-  </div>
+  <img class="capa-arte" src="{_artes.uri(PECAS['A-01'])}"/>
+  <div class="capa-titulo">{esc(titulo)}</div>
+  <div class="capa-sub">{esc(subtitulo)}</div>
+  <div class="capa-rodape">{esc(autor)} · {esc(versao)}</div>
 </section>
+<section class="guardas" style="{guardas_bg}"></section>
 <section class="rosto">
   <div class="rosto-mid">
     {REGUA}
@@ -494,6 +546,25 @@ def main():
     <p class="rosto-autor">{esc(autor)}</p>
   </div>
   <p class="rosto-pe">{esc(versao)} · Diagramação conforme o Sistema Gráfico de Dualis</p>
+</section>
+<section class="frontis">
+  <img src="{_artes.uri(PECAS['B-00'])}"/>
+  <p class="frontis-legenda">O mapa de Iris termina exatamente ali.</p>
+</section>'''
+
+    quarta = f'''
+<section class="guardas" style="{guardas_bg}"></section>
+<section class="quarta">
+  <div class="quarta-mid">
+    <figure class="quarta-vinheta"><img src="{_artes.uri(PECAS['A-02'])}"/></figure>
+    <p class="quarta-texto">Há uma porta diante de você. Talvez tenha uma chave. Talvez não.
+    Pode escutar, procurar outra entrada, voltar pelo caminho de onde veio — ou abrir.
+    Nenhuma dessas ações exige uma rolagem. Mas cada uma muda aquilo que poderá acontecer depois.</p>
+    <p class="quarta-texto"><em>Dualis é um RPG sobre mundos que respondem às escolhas de quem os atravessa.</em></p>
+    <div class="quarta-pergunta">O QUE VOCÊ FAZ?</div>
+    {REGUA}
+    <div class="quarta-marca">{esc(titulo)} · {esc(subtitulo)}</div>
+  </div>
 </section>'''
 
     css = (HERE / 'estilo.css').read_text(encoding='utf-8')
@@ -508,6 +579,7 @@ def main():
 {capa}
 {build_toc(b.toc)}
 {corpo}
+{quarta}
 </body>
 </html>'''
     OUT_HTML.write_text(doc, encoding='utf-8')

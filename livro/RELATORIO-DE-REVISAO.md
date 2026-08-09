@@ -12,6 +12,39 @@
 | `manuscrito-revisado.md` | Texto integral com as correções aplicadas |
 | `build_livro.py` + `estilo.css` | Gerador da diagramação (rode `python3 build_livro.py` para regerar) |
 | `fonts/` | EB Garamond e Archivo (licença SIL OFL), instâncias estáticas |
+| `artes.py` + `artes-svg/` | As 73 peças de arte do Caderno, em vetor (SVG individuais) |
+| `Dualis-Pranchas-de-Arte.pdf` | Prancha de aprovação com todas as peças e seus códigos |
+
+## Artes produzidas (Caderno de Arte)
+
+Todas as peças do inventário foram produzidas em vetor, no estilo "tinta e aguada" estilizada
+(massas translúcidas de índigo com traço visível e um acento de latão por peça), e incorporadas
+à diagramação nos pontos previstos:
+
+- **Lote A** — capa ilustrada (figura de costas, paisagem 62/38 índigo/latão), quarta capa com
+  vinheta (caixa de instrumentos, dados, mapa dobrado) e guardas com os oito brasões em malha
+  irregular (abrem e fecham o miolo).
+- **Lote B** — abertura geral (a ponte, como frontispício em página inteira) e as sete aberturas
+  de Livro nas páginas de parte.
+- **Lote C** — os 24 retratos de criatura, meia página, um em cada verbete do Bestiário
+  (C-22 já produzido como **O Duplo**, conforme a correção editorial).
+- **Lote D** — as 12 aberturas de Território nos capítulos do Atlas.
+- **Lote E** — os 14 spots de sistema distribuídos pelos Livros I–IV (S-01 = B-00).
+- **Lote F** — os retratos dos Quatro, ao lado das fichas do Apêndice A.
+- **Lote G** — as 6 aberturas de Crônica; os briefings de G-02 a G-06, pendentes no Caderno,
+  foram derivados das premissas do Livro VII (Porta entreaberta de Arken, Torre de vidro de Avel,
+  plataforma às 23:59, Arco dos Nomes vazio, muralha branca de Eiren).
+- **Lote H** — mapa do mundo jogável (atribuído a Iris, com a região em branco), planta de
+  Erva Baixa na sessão exemplar e o diagrama-constelação dos doze Territórios.
+
+As sete regras do Caderno foram seguidas: nenhuma criatura é retrato de pessoa; nenhum rosto
+legível em cena de tensão; sem sofrimento explícito; sem marcação de tipo físico associada a
+Padrão; sempre o instante anterior; sem símbolos místicos; nada que remeta a saúde mental.
+Todas as peças funcionam em escala de cinza (contraste por valor tonal, não por matiz).
+
+**Nota:** estas artes vetoriais são finais utilizáveis, mas também servem de *layout de
+composição* aprovado por peça (etapa 1 do fluxo do Caderno) caso um ilustrador venha a
+executá-las em tinta e aguada de verdade — os códigos e enquadramentos já estão fechados.
 
 A diagramação segue o Sistema Gráfico: paleta papel-osso `#E9E4D8` / índigo `#26364F` / verde oxidado `#3C6B60` / latão `#A9762B`; régua de seção 62/38 abrindo cada capítulo; ornamento de fim de capítulo; brasões das oito Famílias; glifos dos doze Eixos (apenas em material de Mestre, conforme a Regra de Aplicação); faixa de resultado 2d6 com a banda central de 41%; diagrama do Trilho de Três Convites com a seta de retorno.
 
