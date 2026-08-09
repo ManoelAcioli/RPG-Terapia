@@ -538,12 +538,14 @@ def main():
     titulo, subtitulo, autor, versao = (fm + ['', '', '', ''])[:4]
 
     guardas_bg = f"background-image:url('{arte_src('A-03')}')"
-    capa = f'''
-<section class="capa">
-  <img class="capa-arte" src="{arte_src('A-01')}"/>
+    capa_pintada = any((FINAIS / f'A-01.{e}').exists() for e in ('png', 'jpg', 'jpeg', 'webp'))
+    capa_texto = '' if capa_pintada else f'''
   <div class="capa-titulo">{esc(titulo)}</div>
   <div class="capa-sub">{esc(subtitulo)}</div>
-  <div class="capa-rodape">{esc(autor)} · {esc(versao)}</div>
+  <div class="capa-rodape">{esc(autor)} · {esc(versao)}</div>'''
+    capa = f'''
+<section class="capa">
+  <img class="capa-arte" src="{arte_src('A-01')}"/>{capa_texto}
 </section>
 <section class="guardas" style="{guardas_bg}"></section>
 <section class="rosto">

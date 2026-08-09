@@ -106,3 +106,35 @@ A Camada do Mestre dos quatro pré-gerados registra "Eixo dominante / secundári
 3. **Caderno de Arte, contagem:** B-00 "é a mesma peça" que S-01, então as 74 peças contam a mesma arte duas vezes — são 73 artes únicas (afeta orçamento).
 4. **Anexo terapêutico:** a decisão de migrá-lo para volume clínico separado segue em aberto; ele está diagramado ao fim do livro, como no manuscrito.
 5. **Capítulos consolidados:** os capítulos marcados "consolidado da versão anterior" seguem aguardando expansão editorial — a marcação foi mantida visível na diagramação (linha em verde, itálico).
+
+
+---
+
+## Triagem das artes pintadas recebidas (segunda rodada)
+
+**Incorporadas ao livro (40 peças)** — em `artes-finais/`, substituindo automaticamente o vetor:
+
+- **A-01** Capa (a pintada já traz título e autor; a sobreposição de texto do gerador foi desativada).
+- **B-00** Abertura geral / frontispício (a ponte antes da tempestade). Uma segunda versão (viaduto) guardada em `artes-finais/alternativas/B-00-alt.jpg`.
+- **B-01** Livro I (a mesa com a cadeira vazia puxada, luz de fim de tarde).
+- **C-01 a C-24** — o Bestiário completo, as 24 criaturas. Versão anterior do Vigia guardada como alternativa (`C-01-alt.jpg`).
+- **S-02 a S-14** — os 13 spots de sistema (S-01 = B-00, já coberto). Lote E completo.
+
+**Pendentes (33 peças, seguem na versão vetorial dentro do livro):**
+
+| Lote | Códigos | O que falta |
+|---|---|---|
+| B | B-02 a B-07 | Aberturas dos Livros II–VII (ficha em branco; vilarejo ao anoitecer; folha do Mestre com xícara; a torre-criatura; mapa pela metade; estrada com seis marcos) |
+| D | T-01 a T-12 | As 12 aberturas de Território do Atlas |
+| F | F-01 a F-04 | Retratos dos Quatro (Iris, Tavi, Beren, Wren) |
+| G | G-01 a G-06 | As 6 aberturas de Crônica |
+| H | H-01 a H-03 | Mapa do mundo, planta de Erva Baixa, diagrama dos Territórios |
+| A | A-02, A-03 | Quarta capa (vinheta) e guardas (padronagem dos brasões) |
+
+**Recebidas mas não mapeáveis ao inventário:** dez pranchas de *cartas* (estilo baralho, com códigos B-/C-/F- próprios e títulos como "Encruzilhada de Carvão", "Poço das Verdades") e um quadro "Modelo Visual". São material bonito, mas pertencem a outro produto (um deck de encontros?) — não correspondem a nenhuma peça do Caderno de Arte. Guardadas fora do livro; se quiser, viram um suplemento.
+
+**Observações de conformidade com as sete regras** (decisão de autor, nenhuma bloqueia):
+1. Várias criaturas ganharam a mesma cabeça de "muitos olhos" do Vigia (Camaleão, Ator, Oráculo, Silenciador, Contabilista etc.). Funciona como assinatura visual unificadora do Bestiário, mas dilui a identidade individual que os briefings pediam — e a regra 1 pedia que a criatura fosse preferencialmente "lugar, objeto ou estrutura". Se quiser diferenciar depois, os briefings individuais continuam valendo.
+2. O Rastreador (C-03) e algumas cenas de fundo têm rostos humanos parcialmente legíveis (regra 2 pede preferência por postura e distância). Leve; nada dramático.
+3. O Carrasco (C-08) segura o machado em vez de apoiá-lo no chão com a lâmina para si, como pedia o briefing (e "Evitar: arma empunhada"). Vale conferir se incomoda.
+4. A capa pintada tem proporção levemente diferente de 190×250; está esticada ~1% na vertical, imperceptível.
