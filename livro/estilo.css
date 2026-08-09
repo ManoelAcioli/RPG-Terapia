@@ -1,0 +1,236 @@
+/* ============================================================
+   DUALIS · Livro Básico — estilo de diagramação
+   Sistema Gráfico: papel osso #E9E4D8 · índigo #26364F
+                    verde oxidado #3C6B60 · latão #A9762B
+   Formato: 190 × 250 mm
+   ============================================================ */
+
+@font-face { font-family: 'EB Garamond'; src: url('fonts/EBGaramond-Regular.ttf'); font-weight: 400; }
+@font-face { font-family: 'EB Garamond'; src: url('fonts/EBGaramond-Bold.ttf'); font-weight: 700; }
+@font-face { font-family: 'EB Garamond'; src: url('fonts/EBGaramond-Italic.ttf'); font-weight: 400; font-style: italic; }
+@font-face { font-family: 'Archivo'; src: url('fonts/Archivo-Medium.ttf'); font-weight: 500; }
+@font-face { font-family: 'Archivo'; src: url('fonts/Archivo-Bold.ttf'); font-weight: 700; }
+
+:root {
+  --papel: #E9E4D8;
+  --indigo: #26364F;
+  --verde: #3C6B60;
+  --latao: #A9762B;
+  --tinta: #22303F;
+  --papel-fundo: #EEEAe0;
+}
+
+@page {
+  size: 190mm 250mm;
+  margin: 20mm 17mm 22mm 19mm;
+  background: var(--papel);
+  @bottom-center {
+    content: counter(page);
+    font-family: 'Archivo';
+    font-weight: 500;
+    font-size: 7.5pt;
+    letter-spacing: 0.18em;
+    color: var(--indigo);
+  }
+  @bottom-left {
+    content: 'DUALIS';
+    font-family: 'Archivo';
+    font-weight: 500;
+    font-size: 6.5pt;
+    letter-spacing: 0.3em;
+    color: var(--latao);
+  }
+  @bottom-right {
+    content: 'LIVRO BÁSICO';
+    font-family: 'Archivo';
+    font-weight: 500;
+    font-size: 6.5pt;
+    letter-spacing: 0.3em;
+    color: var(--latao);
+  }
+}
+@page capa { margin: 0; background: var(--indigo); @bottom-center { content: none } @bottom-left { content: none } @bottom-right { content: none } }
+@page rosto { @bottom-center { content: none } @bottom-left { content: none } @bottom-right { content: none } }
+
+html { -weasy-hyphens: auto; }
+body {
+  font-family: 'EB Garamond', 'Charter', serif;
+  font-size: 10.6pt;
+  line-height: 1.5;
+  color: var(--tinta);
+  hyphens: auto;
+}
+
+p { margin: 0 0 0.55em 0; text-align: justify; orphans: 2; widows: 2; }
+
+strong.lead { font-family: 'Archivo'; font-weight: 700; font-size: 8.1pt; letter-spacing: 0.05em; color: var(--indigo); }
+
+/* ---------------- capa e rosto ---------------- */
+.capa { page: capa; page-break-after: always; width: 190mm; height: 250mm; }
+.capa-indigo {
+  height: 62%; background: var(--indigo); color: var(--papel);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 18mm; box-sizing: border-box;
+}
+.capa-latao {
+  height: 38%; background: var(--latao); color: var(--indigo);
+  padding: 12mm 18mm; box-sizing: border-box;
+}
+.capa-titulo { font-family: 'EB Garamond'; font-size: 52pt; letter-spacing: 0.14em; }
+.capa-sub { font-family: 'Archivo'; font-weight: 500; font-size: 10pt; letter-spacing: 0.28em; text-transform: uppercase; margin-top: 6mm; color: #cfd7e4; }
+.capa-autor { font-family: 'Archivo'; font-weight: 700; font-size: 11pt; letter-spacing: 0.2em; text-transform: uppercase; }
+.capa-versao { font-family: 'Archivo'; font-weight: 500; font-size: 8pt; letter-spacing: 0.18em; text-transform: uppercase; margin-top: 3mm; }
+
+.rosto { page: rosto; page-break-after: always; text-align: center; }
+.rosto-mid { margin-top: 55mm; }
+.rosto h1 { font-size: 34pt; font-weight: 400; letter-spacing: 0.16em; color: var(--indigo); margin: 8mm 0 2mm; }
+.rosto-sub { font-family: 'Archivo'; font-weight: 500; font-size: 9pt; letter-spacing: 0.3em; text-transform: uppercase; color: var(--latao); text-align: center; }
+.rosto-autor { margin-top: 16mm; font-size: 13pt; font-style: italic; text-align: center; }
+.rosto-pe { margin-top: 70mm; font-family: 'Archivo'; font-weight: 500; font-size: 7pt; letter-spacing: 0.22em; text-transform: uppercase; color: var(--verde); text-align: center; }
+
+/* ---------------- sumário ---------------- */
+.toc { page-break-after: always; }
+.toc-title { font-size: 24pt; font-weight: 400; color: var(--indigo); margin: 2mm 0 4mm; }
+.toc ul { list-style: none; padding: 0; margin: 6mm 0 0; }
+.toc a { text-decoration: none; color: var(--tinta); display: block; }
+.toc-part { margin: 4.5mm 0 1.2mm; font-family: 'Archivo'; font-weight: 700; font-size: 9.5pt; letter-spacing: 0.06em; color: var(--indigo); }
+.toc-part .toc-kicker { color: var(--latao); font-size: 7.5pt; letter-spacing: 0.2em; margin-right: 2mm; }
+.toc-chap { margin: 0 0 0.8mm 7mm; font-size: 10pt; }
+.toc a::after { content: leader('.') target-counter(attr(href), page); color: var(--verde); font-family: 'Archivo'; font-weight: 500; font-size: 8pt; }
+
+/* ---------------- régua de seção 62/38 ---------------- */
+.regua { margin: 0 0 7mm; }
+.regua-svg { width: 100%; height: 4mm; }
+
+/* ---------------- aberturas ---------------- */
+.part { page-break-before: right; padding-top: 58mm; page-break-after: always; }
+.part .regua { margin-bottom: 10mm; }
+.part-kicker, .chap-kicker {
+  font-family: 'Archivo'; font-weight: 700; font-size: 9pt;
+  letter-spacing: 0.34em; text-transform: uppercase; color: var(--latao);
+}
+.part h1 { font-size: 30pt; font-weight: 400; color: var(--indigo); margin: 3mm 0 0; line-height: 1.15; }
+.part-sub { margin-top: 8mm; font-style: italic; font-size: 12pt; color: var(--verde); text-align: left; }
+
+.chapter { page-break-before: always; margin-bottom: 7mm; }
+.chapter .chap-kicker { font-size: 7.5pt; }
+.chapter h2 { font-size: 20pt; font-weight: 400; color: var(--indigo); margin: 1.5mm 0 0; line-height: 1.2; }
+
+.familia { page-break-before: always; margin-bottom: 6mm; padding-top: 10mm; }
+.familia h2 { font-size: 22pt; font-weight: 400; color: var(--indigo); margin: 1mm 0 0; }
+
+/* ---------------- títulos internos ---------------- */
+h3 { font-size: 14pt; font-weight: 700; color: var(--indigo); margin: 6mm 0 2mm; page-break-after: avoid; }
+h3.criatura { font-size: 16pt; font-weight: 400; letter-spacing: 0.04em; border-top: 0.9pt solid var(--latao); padding-top: 4mm; margin-top: 9mm; }
+h4 { font-family: 'Archivo'; font-weight: 700; font-size: 9pt; letter-spacing: 0.16em; text-transform: uppercase; color: var(--verde); margin: 5mm 0 1.6mm; page-break-after: avoid; }
+h5 { font-family: 'Archivo'; font-weight: 700; font-size: 8.2pt; letter-spacing: 0.14em; text-transform: uppercase; color: var(--indigo); margin: 4.5mm 0 1.4mm; page-break-after: avoid; }
+h6 { font-family: 'Archivo'; font-weight: 500; font-size: 8.2pt; letter-spacing: 0.08em; color: var(--latao); margin: 3.5mm 0 1.2mm; page-break-after: avoid; }
+
+/* ---------------- ícones ---------------- */
+.icon, .fim-svg, .trilho-svg { stroke: currentColor; }
+.brasao { color: var(--indigo); }
+.brasao-grande .icon { width: 22mm; height: 22mm; color: var(--latao); }
+.brasao-mini { display: inline-block; vertical-align: -1.2mm; margin-right: 2.6mm; }
+.brasao-mini .icon { width: 6.5mm; height: 6.5mm; }
+.glifo { display: inline-block; vertical-align: -2.2mm; margin-right: 2.2mm; color: var(--latao); }
+.glifo .icon { width: 7.5mm; height: 7.5mm; }
+h4.eixo-titulo { font-size: 12pt; letter-spacing: 0.1em; color: var(--indigo); border-top: 0.7pt solid var(--indigo); padding-top: 3.5mm; margin-top: 8mm; }
+h4.eixo-titulo .eixo-num { font-size: 7pt; color: var(--latao); letter-spacing: 0.28em; margin-right: 1.5mm; }
+
+.fim-capitulo { text-align: center; margin: 7mm 0 3mm; color: var(--indigo); }
+.fim-svg { width: 26mm; height: 9mm; }
+
+/* ---------------- caixas ---------------- */
+.box {
+  border-left: 2.2pt solid var(--latao);
+  background: rgba(169, 118, 43, 0.07);
+  padding: 2.6mm 4mm 2mm;
+  margin: 3.2mm 0 3.6mm;
+  page-break-inside: avoid;
+}
+.box p { margin: 0; text-align: left; font-size: 10.2pt; }
+.box p + p { margin-top: 1mm; }
+.box-label {
+  font-family: 'Archivo'; font-weight: 700; font-size: 7.4pt;
+  letter-spacing: 0.24em; text-transform: uppercase; color: var(--latao);
+  margin-bottom: 1.2mm;
+}
+.box-cuidado { border-left-color: var(--verde); background: rgba(60, 107, 96, 0.08); }
+.box-cuidado .box-label { color: var(--verde); }
+.box-exemplo { border-left-color: var(--indigo); background: rgba(38, 54, 79, 0.06); }
+.box-exemplo .box-label { color: var(--indigo); }
+
+/* ---------------- tabelas ---------------- */
+table { width: 100%; border-collapse: collapse; margin: 3mm 0 4mm; font-size: 9.4pt; page-break-inside: auto; }
+th {
+  font-family: 'Archivo'; font-weight: 700; font-size: 7.2pt;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--papel);
+  background: var(--indigo); text-align: left; padding: 1.6mm 2.2mm;
+}
+td { border-bottom: 0.5pt solid rgba(38, 54, 79, 0.35); padding: 1.5mm 2.2mm; vertical-align: top; }
+tr:nth-child(even) td { background: rgba(38, 54, 79, 0.045); }
+
+/* ---------------- faixa 2d6 ---------------- */
+.faixa2d6 { margin: 4mm 0 5mm; page-break-inside: avoid; }
+.f-legenda { margin-left: 28%; width: 41%; text-align: center; font-family: 'Archivo'; font-weight: 500; font-size: 7pt; letter-spacing: 0.3em; color: var(--latao); margin-bottom: 1mm; }
+.f-barras { display: flex; gap: 1.2mm; }
+.f-seg { color: var(--papel); text-align: center; font-family: 'Archivo'; font-weight: 700; font-size: 7.2pt; letter-spacing: 0.2em; padding: 2mm 0; }
+.f-baixo { flex: 28; background: var(--indigo); }
+.f-meio { flex: 41; background: var(--latao); }
+.f-alto { flex: 31; background: var(--verde); }
+.f-rotulos { display: flex; gap: 1.2mm; margin-top: 1mm; font-size: 8pt; font-style: italic; color: var(--tinta); }
+.f-rotulos div { text-align: center; }
+.f-rotulos div:nth-child(1) { flex: 28; }
+.f-rotulos div:nth-child(2) { flex: 41; }
+.f-rotulos div:nth-child(3) { flex: 31; }
+
+/* ---------------- trilho ---------------- */
+.trilho-diagrama { text-align: center; margin: 3mm 0 4mm; page-break-inside: avoid; }
+.trilho-svg { width: 108mm; height: 52mm; }
+.trilho-svg .t { font-family: 'Archivo'; font-weight: 700; font-size: 7.5px; letter-spacing: 0.18em; fill: var(--indigo); stroke: none; }
+.trilho-svg .tl { fill: var(--latao); font-size: 6.5px; }
+
+/* ---------------- sessão exemplar ---------------- */
+.fala { text-align: left; margin-bottom: 1.6mm; }
+.fala .quem { font-family: 'Archivo'; font-weight: 700; font-size: 7.6pt; letter-spacing: 0.14em; color: var(--verde); margin-right: 1.2mm; }
+aside.bastidores {
+  border: 0.6pt solid rgba(38, 54, 79, 0.4);
+  border-left: 2.2pt solid var(--indigo);
+  background: rgba(38, 54, 79, 0.06);
+  padding: 2.4mm 3.6mm 1.8mm;
+  margin: 2.4mm 0 3mm;
+  font-size: 9.6pt;
+  page-break-inside: avoid;
+}
+aside.bastidores p { text-align: left; margin-bottom: 1mm; }
+.aside-label { font-family: 'Archivo'; font-weight: 700; font-size: 7pt; letter-spacing: 0.26em; text-transform: uppercase; color: var(--indigo); margin-bottom: 1.2mm; }
+
+/* ---------------- camada do mestre ---------------- */
+.camada-mestre {
+  border: 0.8pt solid var(--indigo);
+  background: rgba(38, 54, 79, 0.07);
+  padding: 3mm 4mm 2.4mm;
+  margin: 4mm 0 5mm;
+  page-break-inside: avoid;
+}
+.cm-label { font-family: 'Archivo'; font-weight: 700; font-size: 7pt; letter-spacing: 0.22em; text-transform: uppercase; color: var(--indigo); margin-bottom: 1.6mm; }
+.camada-mestre p { text-align: left; font-size: 9.8pt; }
+h4.camada-jogador { color: var(--latao); }
+
+/* ---------------- listas de traço ---------------- */
+.lista-intro { margin-bottom: 0.8mm; text-align: left; }
+ul.tracos { list-style: none; margin: 0 0 2.6mm; padding: 0; }
+ul.tracos li { padding-left: 5mm; margin-bottom: 0.7mm; text-indent: -5mm; text-align: left; }
+ul.tracos li::before { content: '—'; color: var(--latao); margin-right: 1.8mm; }
+
+/* ---------------- diversos ---------------- */
+.diagrama {
+  text-align: center; font-family: 'Archivo'; font-weight: 500;
+  font-size: 8pt; letter-spacing: 0.1em; color: var(--indigo);
+  margin: 3mm 0 3.5mm; page-break-inside: avoid;
+}
+.nota-consolidacao {
+  font-style: italic; font-size: 9pt; color: var(--verde);
+  border-bottom: 0.5pt dotted var(--verde); padding-bottom: 1.4mm; margin-bottom: 3mm;
+  text-align: left;
+}
